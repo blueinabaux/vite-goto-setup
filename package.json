@@ -1,0 +1,15 @@
+{
+  "name": "vite-goto-setup",
+  "version": "1.0.1",
+  "description": "This is a Vite folder structure setup that solves the issue of creating multiple basic folders all the time",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "vite-goto-setup": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Neel Satdive",
+  "license": "ISC"
+}
