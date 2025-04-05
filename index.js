@@ -123,5 +123,5 @@ function showFinalMessage() {
     console.log(`\n🎉 All set! Your Vite project is ready to go.`);
     console.log(`📁 Created folders: ${foldersToCreate.join(", ")}`);
     console.log(`📄 Layout.jsx and main.jsx setup complete.`);
-    console.log(`🚀 Happy hacking, Neel! ✨\n`);
+    console.log(`🚀 Happy hacking ✨\n`);
   }
