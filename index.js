@@ -77,7 +77,7 @@ if (!fs.existsSync(layoutFilePath)) {
 
 const mainFilePath = path.join(srcPath, "main.jsx");
 if(fs.existsSync(mainFilePath)){
-    fs.writeFile(mainFilePath, mainFile.trim());
+    fs.writeFileSync(mainFilePath, mainFile.trim());
     console.log(`✅ Updated Layout.jsx`);
 }
 
