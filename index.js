@@ -15,12 +15,13 @@ const foldersToCreate = ["Layout", "Components", "Pages"];
 
 const layoutFile = `
   import React from 'react';
+  import {Outlet} from 'react-router-dom';
 
-  const Layout = ({ children }) => {
+  const Layout = () => {
     return (
       <div>
         {/* Add your layout structure here */}
-        {children}
+        <Outlet/>
       </div>
     );
   };
@@ -28,10 +29,37 @@ const layoutFile = `
   export default Layout;
 `;
 
+const mainFile = `
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
+import Layout from './layout/Layout.jsx'
+
+
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<Layout/>} >
+    {/* Make your page routes here */}
+     
+    </Route>
+  )
+)
+
+createRoot(document.getElementById('root')).render(
+ 
+    <RouterProvider router={router} />
+)
+
+`
+
 if (!fs.existsSync(srcPath)) {
   console.error("❌ Couldn't find 'src' folder. Make sure you're in the root of a Vite project.");
   process.exit(1);
 }
+
+
 
 foldersToCreate.forEach((folder) => {
   const folderPath = path.join(srcPath, folder);
@@ -45,6 +73,12 @@ const layoutFilePath = path.join(srcPath, "Layout", "Layout.jsx");
 if (!fs.existsSync(layoutFilePath)) {
   fs.writeFileSync(layoutFilePath, layoutFile.trim());
   console.log(`✅ Created Layout.jsx`);
+}
+
+const mainFilePath = path.join(srcPath, "main.jsx");
+if(fs.existsSync(mainFilePath)){
+    fs.writeFile(mainFilePath, mainFile.trim());
+    console.log(`✅ Updated Layout.jsx`);
 }
 
 
@@ -69,6 +103,7 @@ inquirer.prompt([
     const selectedPackages = answer.packages;
     if(selectedPackages.length === 0){
         console.log("⚠️ No packages selected. Skipping installation.");
+        showFinalMessage();
         return;
     }
 
@@ -80,5 +115,13 @@ inquirer.prompt([
             return;
           }
           spinner.succeed("✅ Dependencies installed successfully!");
+          showFinalMessage();
     })
-})
+});
+
+function showFinalMessage() {
+    console.log(`\n🎉 All set! Your Vite project is ready to go.`);
+    console.log(`📁 Created folders: ${foldersToCreate.join(", ")}`);
+    console.log(`📄 Layout.jsx and main.jsx setup complete.`);
+    console.log(`🚀 Happy hacking, Neel! ✨\n`);
+  }
