@@ -102,8 +102,6 @@ function writeMainFileIfRouterSelected(useRouter) {
   if (useRouter) {
     fs.writeFileSync(mainFilePath, mainFile.trim());
     console.log(`✅ Created main.jsx with router setup`);
-  } else if (useRouter) {
-    console.log(`⚠️ Skipped main.jsx – already exists`);
   }
 }
 
