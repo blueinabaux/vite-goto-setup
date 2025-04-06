@@ -47,7 +47,20 @@ Once installed (or with `npx`), run the following command inside the root of you
 npx vite-goto-setup
 ```
 
-### 📁 Step 3: Folder & File Generation
+
+
+### 📦 Step 3: Install Optional Dependencies
+
+The CLI will ask you which packages you'd like to install from:
+
+- `axios`
+- `react-router-dom`
+- `react-icons`
+- `tailwindcss` (with PostCSS and autoprefixer)
+
+Simply use the **spacebar** to select/deselect during the prompt and hit **Enter** to confirm your choices.
+
+### 📁 Step 4: Folder, File & Optional Tailwind Setup
 
 The CLI will automatically:
 
@@ -56,19 +69,16 @@ The CLI will automatically:
   - `Components/`
   - `Pages/`
 
-- 📄 Generate a `Layout.jsx` file with a basic `<Outlet />` and layout structure.
+- 🎨 If you select **react-router-dom**, it will:
+    - 📄 Generate a `Layout.jsx` file with a basic layout structure using `<Outlet />` from `react-router-dom`.
+    
+    - ⚙️ Overwrite your existing `main.jsx` with a router-ready setup.
 
-- ⚙️ Overwrite your existing `main.jsx` with routing logic using `react-router-dom`.
-
-### 📦 Step 4: Install Optional Dependencies
-
-The CLI will ask you which packages you'd like to install from:
-
-- `axios`
-- `react-router-dom`
-- `react-icons`
-
-Simply use the **spacebar** to select/deselect during the prompt and hit **Enter** to confirm your choices.
+- 🎨 If you select **Tailwind CSS**, it will:
+  - Install `tailwindcss`, `postcss`, and `autoprefixer`
+  - Generate `tailwind.config.js` and `postcss.config.js`
+  - Add Tailwind directives to your `index.css`
+  - Configure Tailwind to scan your `src/` and `index.html` files
 
 ### ✅ Step 5: You're All Set!
 
@@ -92,7 +102,6 @@ Contributions, issues and feature requests are welcome!
 Feel free to check the [issues page](https://github.com/blueinabaux/vite-goto-setup/issues) or submit a [pull request](https://github.com/blueinabaux/vite-goto-setup/pulls).
 
 ---
-
 
 
 

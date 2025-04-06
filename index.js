@@ -13,7 +13,21 @@ const __dirname = path.dirname(__filename);
 const srcPath = path.join(process.cwd(), "src");
 const foldersToCreate = ["Layout", "Components", "Pages"];
 
-const layoutFile = `
+const layoutWithoutRouter = `
+  import React from 'react';
+
+  const Layout = () => {
+    return (
+      <div>
+        {/* Add your layout structure here */}
+      </div>
+    );
+  };
+
+  export default Layout;
+`;
+
+const layoutWithRouter = `
   import React from 'react';
   import {Outlet} from 'react-router-dom';
 
@@ -69,16 +83,28 @@ foldersToCreate.forEach((folder) => {
   }
 });
 
-const layoutFilePath = path.join(srcPath, "Layout", "Layout.jsx");
-if (!fs.existsSync(layoutFilePath)) {
-  fs.writeFileSync(layoutFilePath, layoutFile.trim());
-  console.log(`✅ Created Layout.jsx`);
+function writeLayoutFile(useRouter) {
+  const layoutFilePath = path.join(srcPath, "Layout", "Layout.jsx");
+  if (!fs.existsSync(layoutFilePath)) {
+    const layoutContent = useRouter ? layoutWithRouter : layoutWithoutRouter;
+    fs.writeFileSync(layoutFilePath, layoutContent.trim());
+    if(useRouter){
+    console.log(`✅ Added Routing in Layout.jsx`);
+    }
+    else{
+      console.log(`✅ Basic layout set up in Layout.jsx.`);
+    }
+  }
 }
 
-const mainFilePath = path.join(srcPath, "main.jsx");
-if (fs.existsSync(mainFilePath)) {
-  fs.writeFileSync(mainFilePath, mainFile.trim());
-  console.log(`✅ Updated Layout.jsx`);
+function writeMainFileIfRouterSelected(useRouter) {
+  const mainFilePath = path.join(srcPath, "main.jsx");
+  if (useRouter && !fs.existsSync(mainFilePath)) {
+    fs.writeFileSync(mainFilePath, mainFile.trim());
+    console.log(`✅ Created main.jsx with router setup`);
+  } else if (useRouter) {
+    console.log(`⚠️ Skipped main.jsx – already exists`);
+  }
 }
 
 function installTailwind() {
@@ -137,10 +163,13 @@ inquirer
       name: "packages",
       message: "📦 Which packages would you like to install?",
       choices: [
-        { name: "tailwindcss (with PostCSS & autoprefixer)", value: "tailwindcss" },
-      { name: "axios", value: "axios" },
-      { name: "react-router-dom", value: "react-router-dom" },
-      { name: "react-icons", value: "react-icons" }
+        {
+          name: "tailwindcss (with PostCSS & autoprefixer)",
+          value: "tailwindcss",
+        },
+        { name: "axios", value: "axios" },
+        { name: "react-router-dom", value: "react-router-dom" },
+        { name: "react-icons", value: "react-icons" },
       ],
     },
   ])
@@ -148,9 +177,11 @@ inquirer
   .then((answer) => {
     const selectedPackages = answer.packages;
 
-    const wantsTailwind = selectedPackages.includes(
-      "tailwindcss"
-    );
+    const wantsTailwind = selectedPackages.includes("tailwindcss");
+    const wantsRouter = selectedPackages.includes("react-router-dom");
+
+    writeLayoutFile(wantsRouter);
+    writeMainFileIfRouterSelected(wantsRouter);
 
     const packagesToInstall = selectedPackages.filter(
       (pkg) => pkg !== "tailwindcss"
@@ -161,12 +192,11 @@ inquirer
         ? `npm install ${packagesToInstall.join(" ")}`
         : "";
 
-        const spinner = ora(
-          packagesToInstall.length > 0
-            ? `Installing ${packagesToInstall.join(", ")}...`
-            : "Setting up Tailwind CSS..."
-        ).start();
- 
+    const spinner = ora(
+      packagesToInstall.length > 0
+        ? `Installing ${packagesToInstall.join(", ")}...`
+        : "Setting up Tailwind CSS..."
+    ).start();
 
     if (installCmd) {
       exec(installCmd, (error, stdout, stderr) => {
@@ -182,26 +212,37 @@ inquirer
         }
       });
     } else {
+      spinner.stop();
       if (wantsTailwind) {
-        spinner.stop();
         installTailwind();
       } else {
-        spinner.stop();
-        console.log("⚠️ No packages selected. Skipping installation.");
+        console.log("\n⚠️ No packages selected. Skipping installation.\n");
         showFinalMessage();
       }
     }
-
-    
   });
 
-  function showFinalMessage() {
-    console.log(`\n🎉 Setup Complete! Here's what we did for you:\n`);
-    console.log(`📁 Created folders: ${foldersToCreate.join(", ")}`);
-    console.log(`🧩 Setup routing with: Layout.jsx and main.jsx`);
-    console.log(`🎨 Tailwind CSS: ${fs.existsSync(path.join(process.cwd(), "tailwind.config.js")) ? "Configured ✅" : "Not installed ❌"}`);
-    console.log(`📦 Installed packages: axios, react-router-dom, react-icons (based on your selection)`);
-    console.log(`\n✨ You're now ready to start building your React app with a clean structure!`);
-    console.log(`📌 Tip: Add your routes inside <Route> in main.jsx and components under Components/ folder.`);
-    console.log(`🚀 Happy hacking, and may your bugs be tiny and easy to squash!\n`);
-  }
+function showFinalMessage() {
+  console.log(`\n🎉 Setup Complete! Here's what we did for you:\n`);
+  console.log(`📁 Created folders: ${foldersToCreate.join(", ")}`);
+  console.log(`🧩 Setup routing with: ${fs.existsSync(path.join(srcPath, "main.jsx")) ? "✅ main.jsx" : "❌ (react-router-dom not selected)"}`);
+  console.log(
+    `🎨 Tailwind CSS: ${
+      fs.existsSync(path.join(process.cwd(), "tailwind.config.js"))
+        ? "Configured ✅"
+        : "Not installed ❌"
+    }`
+  );
+  console.log(
+    `📦 Installed packages: axios, react-router-dom, react-icons (based on your selection)`
+  );
+  console.log(
+    `\n✨ You're now ready to start building your React app with a clean structure!`
+  );
+  console.log(
+    `📌 Tip: Add your routes inside <Route> in main.jsx and components under Components/ folder.`
+  );
+  console.log(
+    `🚀 Happy hacking, and may your bugs be tiny and easy to squash!\n`
+  );
+}
