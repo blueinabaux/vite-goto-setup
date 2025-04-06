@@ -1,7 +1,17 @@
 {
   "name": "vite-goto-setup",
   "version": "1.0.9",
-  "description": "This is a Vite folder structure setup that solves the issue of creating multiple basic folders all the time",
+  "description": "A CLI to quickly scaffold a Vite React folder structure with Tailwind and React Router",
+  "keywords": [
+    "react",
+    "cli",
+    "vite",
+    "tailwind",
+    "react-router",
+    "starter-kit",
+    "scaffolding",
+    "react-template"
+  ],
   "main": "index.js",
   "type": "module",
   "bin": {
