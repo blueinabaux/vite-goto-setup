@@ -104,7 +104,7 @@ function installTailwind() {
         fs.writeFileSync(indexCssPath, tailwindContent);
       }
 
-      const tailwindConfigPath = path.join(srcPath, "tailwind.config.js");
+      const tailwindConfigPath = path.join(process.cwd(), "tailwind.config.js");
 
       if (fs.existsSync(tailwindConfigPath)) {
         const updatedConfig = `
@@ -137,10 +137,10 @@ inquirer
       name: "packages",
       message: "📦 Which packages would you like to install?",
       choices: [
-        { name: "tailwindcss (with PostCSS & autoprefixer)" },
-        { name: "axios" },
-        { name: "react-router-dom" },
-        { name: "react-icons" },
+        { name: "tailwindcss (with PostCSS & autoprefixer)", value: "tailwindcss" },
+      { name: "axios", value: "axios" },
+      { name: "react-router-dom", value: "react-router-dom" },
+      { name: "react-icons", value: "react-icons" }
       ],
     },
   ])
@@ -149,11 +149,11 @@ inquirer
     const selectedPackages = answer.packages;
 
     const wantsTailwind = selectedPackages.includes(
-      "tailwindcss (with PostCSS & autoprefixer)"
+      "tailwindcss"
     );
 
     const packagesToInstall = selectedPackages.filter(
-      (pkg) => !pkg.startsWith("tailwind")
+      (pkg) => pkg !== "tailwindcss"
     );
 
     const installCmd =
@@ -161,11 +161,12 @@ inquirer
         ? `npm install ${packagesToInstall.join(" ")}`
         : "";
 
-    // if(selectedPackages.length === 0){
-    //     console.log("⚠️ No packages selected. Skipping installation.");
-    //     showFinalMessage();
-    //     return;
-    // }
+        const spinner = ora(
+          packagesToInstall.length > 0
+            ? `Installing ${packagesToInstall.join(", ")}...`
+            : "Setting up Tailwind CSS..."
+        ).start();
+ 
 
     if (installCmd) {
       exec(installCmd, (error, stdout, stderr) => {
@@ -182,31 +183,25 @@ inquirer
       });
     } else {
       if (wantsTailwind) {
+        spinner.stop();
         installTailwind();
       } else {
+        spinner.stop();
         console.log("⚠️ No packages selected. Skipping installation.");
         showFinalMessage();
       }
     }
 
-    const spinner = ora(`Installing ${selectedPackages.join(", ")}...`).start();
-
-    exec(
-      `npm install ${selectedPackages.join(" ")}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          spinner.fail(`❌ Failed to install: ${error.message}`);
-          return;
-        }
-        spinner.succeed("✅ Dependencies installed successfully!");
-        showFinalMessage();
-      }
-    );
+    
   });
 
-function showFinalMessage() {
-  console.log(`\n🎉 All set! Your Vite project is ready to go.`);
-  console.log(`📁 Created folders: ${foldersToCreate.join(", ")}`);
-  console.log(`📄 Layout.jsx and main.jsx setup complete.`);
-  console.log(`🚀 Happy hacking ✨\n`);
-}
+  function showFinalMessage() {
+    console.log(`\n🎉 Setup Complete! Here's what we did for you:\n`);
+    console.log(`📁 Created folders: ${foldersToCreate.join(", ")}`);
+    console.log(`🧩 Setup routing with: Layout.jsx and main.jsx`);
+    console.log(`🎨 Tailwind CSS: ${fs.existsSync(path.join(process.cwd(), "tailwind.config.js")) ? "Configured ✅" : "Not installed ❌"}`);
+    console.log(`📦 Installed packages: axios, react-router-dom, react-icons (based on your selection)`);
+    console.log(`\n✨ You're now ready to start building your React app with a clean structure!`);
+    console.log(`📌 Tip: Add your routes inside <Route> in main.jsx and components under Components/ folder.`);
+    console.log(`🚀 Happy hacking, and may your bugs be tiny and easy to squash!\n`);
+  }
