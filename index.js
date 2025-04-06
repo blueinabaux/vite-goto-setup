@@ -48,7 +48,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import Layout from './layout/Layout.jsx'
+import Layout from './Layout/Layout.jsx'
 
 
 
@@ -99,7 +99,7 @@ function writeLayoutFile(useRouter) {
 
 function writeMainFileIfRouterSelected(useRouter) {
   const mainFilePath = path.join(srcPath, "main.jsx");
-  if (useRouter && !fs.existsSync(mainFilePath)) {
+  if (useRouter) {
     fs.writeFileSync(mainFilePath, mainFile.trim());
     console.log(`✅ Created main.jsx with router setup`);
   } else if (useRouter) {
